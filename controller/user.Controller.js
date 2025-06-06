@@ -2,7 +2,7 @@ const userModel = require("../models/UserModel");
 const expressAsyncHandler = require("express-async-handler");
 
 const register = expressAsyncHandler(async (req, res) => {
-    const { fullName, email, phone, password } = req.body;
+    const { fullName, email, phone, password } = req.query;
 
     if (!fullName || !email || !password || !phone) {
         return res.status(400).json({ message: "Please fill all fields" });

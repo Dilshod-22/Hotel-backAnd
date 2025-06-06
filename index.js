@@ -20,9 +20,6 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 
 
-app.post("/kt",(req,res)=>{
-    res.status(200),json({message:"decs"});
-})
 app.use("/api/user", userRouter);
 
 app.get("/Test", (req, res) => {
