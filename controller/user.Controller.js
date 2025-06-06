@@ -59,6 +59,7 @@ const deActivateUSer = expressAsyncHandler(async (req, res) => {
     res.status(200).json({ message: "User updated successfully" });
 });
 
+
 module.exports = {
     register,
     getUser,
