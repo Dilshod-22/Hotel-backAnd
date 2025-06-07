@@ -9,8 +9,8 @@ const mongodb = require("./config/connectionDB");
 
 const userRouter = require("./Routes/User.route");
 const category = require("./Routes/Categoriya.route");
-
-
+const roomRoute = require("./Routes/Room.route");
+const settinRoute = require("./Routes/setting.route");
 
 mongodb();
 app.use(cors());
@@ -23,6 +23,8 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 app.use("/api/user", userRouter);
 app.use("/api/category",category);
+app.use("/api/room",roomRoute);
+app.use("/api/setting",settinRoute);
 
 app.get("/Test", (req, res) => {
     res.send("Server is running");

@@ -17,6 +17,9 @@ const categorySchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  description:{
+    type:String
+  }
 }, {
   timestamps: true // yaratilgan va yangilangan vaqtni avtomatik qo‘shadi
 });

@@ -12,61 +12,86 @@ const imagekit = new ImageKit({
 
 // 🟢 CREATE category
 const createCategory = expressAsyncHandler(async (req, res) => {
-  const { name, jihozlar, price } = req.body;
+ const { name, price, jihozlar,description } = req.body;
   const file = req.file;
 
-  if (!file) {
-    res.status(400);
-    throw new Error("Image file is required");
+  if (!name || !price || !file || !jihozlar) {
+    return res.status(400).json({ error: "All fields are required" });
   }
 
-  // ImageKit orqali rasm yuklash
-  const uploadResponse = await imagekit.upload({
+  // Agar jihozlar JSON string bo‘lsa, uni arrayga parse qilamiz
+  const parsedJihozlar = Array.isArray(jihozlar) ? jihozlar : JSON.parse(jihozlar);
+
+  // Rasmni ImageKit'ga yuklaymiz
+  const imageUpload =  await imagekit.upload({
     file: file.buffer, // Multer buferdan rasmni oladi
     fileName: file.originalname,
   });
 
-  const newCategory = new Category({
+  // Yangi category yaratamiz
+  const newCategory = await Category.create({
     name,
-    jihozlar,
     price,
-    image: uploadResponse.url,
+    image: imageUpload.url,
+    jihozlar: parsedJihozlar,
+    description
   });
 
-  const savedCategory = await newCategory.save();
-  res.status(201).json(savedCategory);
+  res.status(201).json({
+    message: "Category created successfully",
+    category: newCategory
+  });
 });
 
 
 // 🟡 UPDATE category
 const updateCategory = expressAsyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { name, jihozlar, price } = req.body;
-  const file = req.file;
+const { name, price, jihozlar ,description} = req.body;
+const file = req.file;
+const categoryId = req.params.id;
 
-  const category = await Category.findById(id);
-  if (!category) {
-    res.status(404);
-    throw new Error("Category not found");
+if (!categoryId || !name || !price || !jihozlar) {
+  return res.status(400).json({ error: "All fields are required" });
+}
+
+// Avval kategoriya mavjudligini tekshiramiz
+const category = await Category.findById(categoryId);
+if (!category) {
+  return res.status(404).json({ error: "Category not found" });
+}
+
+// Agar jihozlar JSON string bo‘lsa, uni arrayga parse qilamiz
+const parsedJihozlar = Array.isArray(jihozlar) ? jihozlar : JSON.parse(jihozlar);
+
+// Kategoriyani yangilash uchun ma’lumotlarni tayyorlaymiz
+const updateData = {
+  name,
+  price,
+  jihozlar: parsedJihozlar,
+  description
+};
+
+// Agar yangi rasm yuklangan bo‘lsa, eski rasm bilan solishtiramiz
+if (file) {
+  const imageUpload = await imagekit.upload({
+    file: file.buffer, // Multer buferdan rasmni oladi
+    fileName: file.originalname,
+  });
+
+  // Agar yuklangan rasm URL’isi eski rasm URL’idan farq qilsa, yangilaymiz
+  if (imageUpload.url !== category.image) {
+    updateData.image = imageUpload.url;
   }
+}
 
-  // Agar yangi rasm yuborilgan bo‘lsa, ImageKit’ga yuklash
-  let imageUrl = category.image;
-  if (file) {
-    const uploadResponse = await imagekit.upload({
-      file: file.buffer,
-      fileName: file.originalname,
-    });
-    imageUrl = uploadResponse.url;
-  }
+// Kategoriyani yangilaymiz
+const updatedCategory = await Category.findByIdAndUpdate(categoryId, updateData, { new: true });
 
-  category.name = name || category.name;
-  category.jihozlar = jihozlar || category.jihozlar;
-  category.price = price || category.price;
-  category.image = imageUrl;
+res.status(200).json({
+  message: "Category updated successfully",
+  category: updatedCategory
+});
 
-  const updated = await category.save();
-  res.status(200).json(updated);
 });
 
 module.exports = {

@@ -11,7 +11,9 @@ const RoomSchema = new Schema(
   userId: [{ type: Types.ObjectId, ref: '' }],            // Bog‘langan bookinglar
   lastBookedUntil: { type: Date },           // ✅ So‘nggi bandlik muddati tugash sanasi
   createdAt: { type: Date, default: Date.now },
-  floor:{type:String}
+  floor:{type:String},
+  guests:{type:String},
+  size:{type:String}
 }
 );
 

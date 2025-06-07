@@ -6,6 +6,9 @@ const SettingSchema = new mongoose.Schema({
         email: { type: String },
         phone: { type: String }, // "998901234567"
         address: { type: String }, // "Tashkent, Uzbekistan"
+    },
+    image:{
+        type:String
     }
 });
 
