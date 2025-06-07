@@ -7,8 +7,8 @@ const mongodb = require("./config/connectionDB");
 
 
 
-const userRouter = require("./Routes/UserRoute.route");
-
+const userRouter = require("./Routes/User.route");
+const category = require("./Routes/Categoriya.route");
 
 
 
@@ -22,6 +22,10 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 
 app.use("/api/user", userRouter);
+app.use("/api/category",category);
+app.post("/somsa",async(req,res)=>{
+    res.json({message:"dabba"});
+})
 
 app.get("/Test", (req, res) => {
     res.send("Server is running");

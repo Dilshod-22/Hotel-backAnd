@@ -10,7 +10,8 @@ const RoomSchema = new Schema(
   status: { type: String, enum: ['available', 'notAvailable'], default: 'available' },  // Hozirgi holati
   userId: [{ type: Types.ObjectId, ref: '' }],            // Bog‘langan bookinglar
   lastBookedUntil: { type: Date },           // ✅ So‘nggi bandlik muddati tugash sanasi
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  floor:{type:String}
 }
 );
 

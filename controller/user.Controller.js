@@ -2,33 +2,10 @@ const userModel = require("../models/UserModel");
 const expressAsyncHandler = require("express-async-handler");
 
 const register = expressAsyncHandler(async (req, res) => {
-    const { fullName, email, phone, password } = req.body;
+    const { fullName, email, phone, password } = req.query;
 
     if (!fullName || !email || !password || !phone) {
         return res.status(400).json({ message: req.body });
-    }
-
-    const userExists = await userModel.findOne({ email });
-    if (userExists) {
-        return res.status(400).json({ message: "User already exists" });
-    }
-
-    const newUser = new userModel({ fullName, email, phone, password });
-    await newUser.save();
-
-    res.status(201).json({
-        _id: newUser._id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        phone: newUser.phone
-    });
-});
-const register1 = expressAsyncHandler(async (req, res) => {
-    const { fullName, email, phone, password } = req.body;
-
-    if (!fullName || !email || !password || !phone) {
-        return res.status(400).json({ message: req.body });
-    
     }
 
     const userExists = await userModel.findOne({ email });
@@ -85,7 +62,6 @@ const deActivateUSer = expressAsyncHandler(async (req, res) => {
 
 module.exports = {
     register,
-    register1,
     getUser,
     getAllUsers,
     deActivateUSer,
