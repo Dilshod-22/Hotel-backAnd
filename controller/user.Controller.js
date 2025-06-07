@@ -5,7 +5,7 @@ const register = expressAsyncHandler(async (req, res) => {
     const { fullName, email, phone, password } = req.body;
 
     if (!fullName || !email || !password || !phone) {
-        return res.status(400).json({ message: "Please fill all fields" });
+        return res.status(400).json({ message: req.body });
     }
 
     const userExists = await userModel.findOne({ email });
