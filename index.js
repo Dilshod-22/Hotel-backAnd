@@ -9,8 +9,8 @@ const mongodb = require("./config/connectionDB");
 
 const userRouter = require("./Routes/User.route");
 const category = require("./Routes/Categoriya.route");
-const roomRoute = require("./Routes/Room.route");
-const settinRoute = require("./Routes/setting.route");
+// const roomRoute = require("./Routes/Room.route");
+// const settinRoute = require("./Routes/setting.route");
 
 mongodb();
 app.use(cors());
