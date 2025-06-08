@@ -8,7 +8,7 @@ route.put('/getUser/:id',UserController.getUser);
 route.get('/getAllUsers',UserController.getAllUsers);
 route.put("/deActivate/:id",UserController.deActivateUSer);
 route.post("/login",UserController.login)
-route.put("/updateUser",UserController.updateUser)
+route.put("/updateUser/:id",UserController.updateUser)
 
 
 module.exports = route;

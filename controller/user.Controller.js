@@ -4,7 +4,7 @@ const expressAsyncHandler = require("express-async-handler");
 const register = expressAsyncHandler(async (req, res) => {
     const { fullName, email, phone, password, address } = req.body;
 
-    if (!fullName || !email || !password || !phone) {
+    if (!fullName || !email || !password) {
         return res.status(400).json({ message: req.body });
     }
 
@@ -47,7 +47,7 @@ const getUser = expressAsyncHandler(async (req, res) => {
 });
 
 const getAllUsers = expressAsyncHandler(async (req, res) => {
-    const users = await userModel.find();
+    const users = await userModel.find({ userActive: true });
     res.status(200).json(users);
 });
 
@@ -95,6 +95,8 @@ const login = expressAsyncHandler(async (req, res) => {
 });
 
 const updateUser = expressAsyncHandler(async (req, res) => {
+    console.log("keldis");
+    
     const { id } = req.params;
     const { fullName, email, phone, address, password, userActive } = req.body;
 

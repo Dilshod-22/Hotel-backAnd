@@ -94,7 +94,24 @@ res.status(200).json({
 
 });
 
+const getAllCategoriya = expressAsyncHandler(async (req, res) => {
+    const categories = await Category.find().sort({ createdAt: 1 });
+
+    const formatted = categories.map((category, index) => ({
+        id: (index + 1).toString(),
+        name: category.name,
+        image: category.image,
+        jihozlar: category.jihozlar,
+        price: category.price,
+        createdAt: category.createdAt
+    }));
+
+    res.status(200).json(formatted);
+});
+
+
 module.exports = {
   createCategory,
   updateCategory,
+  getAllCategoriya
 };
