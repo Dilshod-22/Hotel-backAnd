@@ -19,7 +19,24 @@ res.status(200).json({
 });
 
 })
+const getARooms = expressAsyncHandler(async (req, res) => {
+  const { categoryId } = req.params;
 
+  try {
+    const rooms = await roomModel.find({ categoryId }).populate("categoryId");
+
+    if (rooms.length === 0) {
+      return res.status(404).json({ message: "No rooms found for this category!" });
+    }
+
+    res.status(200).json({
+      message: "Rooms fetched successfully",
+      rooms,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
 
 
 const createRoom = expressAsyncHandler(async(req,res)=>{
@@ -169,5 +186,6 @@ module.exports = {
     deAvailable,
     updateRoom,
     bookedRoom,
+    getARooms,
     updateBookingLog
 }
