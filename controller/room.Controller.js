@@ -20,12 +20,12 @@ res.status(200).json({
 
 })
 const getARooms = expressAsyncHandler(async (req, res) => {
-  const { categoryId } = req.params;
+  const { id } = req.params;
 
   try {
-    const rooms = await roomModel.find({ categoryId }).populate("categoryId");
+    const rooms = await roomModel.find({ _id: id }).populate("categoryId");
 
-    if (rooms.length === 0) {
+    if (!rooms || rooms.length === 0) {
       return res.status(404).json({ message: "No rooms found for this category!" });
     }
 
