@@ -25,6 +25,9 @@ app.use("/api/user", userRouter);
 app.use("/api/category",category);
 app.use("/api/room",roomRoute);
 app.use("/api/setting",settinRoute);
+app.post("/sinov",async(req,res)=>{
+    res.json({messgae:"success"})
+})
 
 app.get("/Test", (req, res) => {
     res.send("Server is running");
