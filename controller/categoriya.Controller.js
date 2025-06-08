@@ -109,9 +109,44 @@ const getAllCategoriya = expressAsyncHandler(async (req, res) => {
     res.status(200).json(formatted);
 });
 
+const getAllCategoriya2 = expressAsyncHandler(async (req, res) => {
+  const categories = await Category.find().sort({ createdAt: 1 });
+
+  const formatted = categories.map((category, index) => ({
+    id: category._id, // 1, 2, 3 kabi bo'ladi
+    name: category.name,
+    image: category.image,
+    jihozlar: category.jihozlar,
+    price: category.price,
+    createdAt: category.createdAt.toISOString(), // ISO format string
+  }));
+
+  res.status(200).json(formatted);
+});
+
+const deleteCategory = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  
+
+  try {
+    const category = await Category.findByIdAndDelete(id);
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found!" });
+    }
+
+    res.status(200).json({ message: "Category deleted successfully!" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+
 
 module.exports = {
   createCategory,
+  getAllCategoriya2,
   updateCategory,
-  getAllCategoriya
+  getAllCategoriya,
+  deleteCategory
 };
