@@ -23,8 +23,8 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 app.use("/api/user", userRouter);
 app.use("/api/category",category);
-app.use("/api/room",roomRoute);
-app.use("/api/setting",settinRoute);
+// app.use("/api/room",roomRoute);
+// app.use("/api/setting",settinRoute);
 app.post("/sinov",async(req,res)=>{
     res.json({messgae:"success"})
 })
