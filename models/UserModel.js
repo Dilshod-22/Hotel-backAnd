@@ -20,6 +20,7 @@ const UserSchema = new Schema({
         lowercase: true,
         trim: true
     },
+    address:{type:String},
     password: {
         type: String,
         required: true

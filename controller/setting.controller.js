@@ -10,41 +10,44 @@ const imagekit = new ImageKit({
 });
 
 
-const setting = expressAsyncHandler(async(req,res)=>{
-    const { name, contact } = req.query;
+const setting = expressAsyncHandler(async (req, res) => {
+    const { name, contact } = req.body;
     const file = req.file;
 
     if (!name && !contact && !file) {
-    return res.status(400).json({ error: "At least one field is required to update" });
+        return res.status(400).json({ error: "Hech bo'lmaganda bitta maydon to'ldirilishi kerak" });
     }
 
-    // Yangilash uchun ma’lumotlarni tayyorlaymiz
     const updateData = {};
     if (name) updateData.name = name;
-    if (contact) updateData.contact = contact;
 
-    // Agar yangi rasm yuklangan bo‘lsa, ImageKit'ga yuklaymiz
+    if (contact) {
+        try {
+            updateData.contact = JSON.parse(contact);
+        } catch (e) {
+            return res.status(400).json({ error: "contact noto‘g‘ri formatda (JSON bo‘lishi kerak)" });
+        }
+    }
+
     if (file) {
-    const imageUpload = await imagekit.upload({
-        file: file.buffer, // Multer buffer orqali rasmni oladi
-        fileName: file.originalname,
-    });
-
-    updateData.image = imageUpload.url;
+        const imageUpload = await imagekit.upload({
+            file: file.buffer,
+            fileName: file.originalname,
+        });
+        updateData.image = imageUpload.url;
     }
 
-    // Bazadagi bitta `Setting` ma’lumotini yangilaymiz
-    const updatedSetting = await settingModel.findOneAndUpdate({}, updateData, { new: true });
-
-    if (!updatedSetting) {
-    return res.status(404).json({ error: "Setting not found" });
-    }
+    const updatedSetting = await settingModel.findOneAndUpdate(
+        {},
+        updateData,
+        { new: true, upsert: true }
+    );
 
     res.status(200).json({
-    message: "Setting updated successfully",
-    setting: updatedSetting
+        message: "Setting muvaffaqiyatli yangilandi yoki yaratildi",
+        setting: updatedSetting
     });
-})
+});
 
 const getInfoSetting = expressAsyncHandler(async(req,res)=>{
     const infoSetting = await settingModel.find();

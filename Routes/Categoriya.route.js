@@ -10,9 +10,9 @@ const {
 } = require("../controller/categoriya.Controller");
 
 // POST /api/categories
-router.get("/create", upload.single("image"), createCategory);
+router.post("/create", upload.single("image"), createCategory);
 
 // PUT /api/categories/:id
-router.get("/update/:id", upload.single("image"), updateCategory);
+router.put("/update/:id", upload.single("image"), updateCategory);
 
 module.exports = router;

@@ -1,10 +1,10 @@
-const Route = require("express").Route();
+const route = require('express').Router();
 const {setting,getInfoSetting} = require("../controller/setting.controller");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-Route.get("/update",upload.single("image"),setting);
-Route.get("/getInfoSetting",getInfoSetting)
+route.post("/update",upload.single("image"),setting);
+route.get("/getInfoSetting",getInfoSetting)
 
-module.exports = Route;
+module.exports = route;

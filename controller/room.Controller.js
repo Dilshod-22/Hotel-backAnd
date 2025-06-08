@@ -23,7 +23,7 @@ res.status(200).json({
 
 
 const createRoom = expressAsyncHandler(async(req,res)=>{
-    const { roomNumber,categoryId,floor,guests,size} = req.query;
+    const { roomNumber,categoryId,floor,guests,size} = req.body;
     let newRoom = new roomModel({
         roomNumber,
         categoryId,
@@ -76,9 +76,11 @@ const updateRoom = expressAsyncHandler(async(req,res)=>{
 })
 
 const bookedRoom = expressAsyncHandler(async(req,res)=>{
- const { roomId, description, byUserId, action, checkInDate, checkOutDate } = req.query;
+    console.log("ekldi");
+    
+ const { roomId, description, userId, action,totalPrice, checkInDate, checkOutDate } = req.body;
 
-    if (!roomId || !byUserId || !action) {
+    if (!roomId || !userId || !action) {
         return res.status(400).json({ message: 'roomId, byUserId va action majburiy maydonlar.' });
     }
 
@@ -95,7 +97,8 @@ const bookedRoom = expressAsyncHandler(async(req,res)=>{
         roomId,
         description,
         action,
-        byUserId,
+        totalPrice,
+        userId,
         checkInDate: parsedCheckIn,
         checkOutDate: parsedCheckOut
     });
@@ -104,7 +107,7 @@ const bookedRoom = expressAsyncHandler(async(req,res)=>{
 
     // Agar action booked bo'lsa va checkOutDate bo'lsa, Room modelini yangilash
     if (action === 'booked' && parsedCheckOut) {
-        await Room.findByIdAndUpdate(roomId, {
+        await roomModel.findByIdAndUpdate(roomId, {
             lastBookedUntil: parsedCheckOut
         });
     }
