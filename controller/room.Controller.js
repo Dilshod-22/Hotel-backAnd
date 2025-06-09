@@ -140,8 +140,11 @@ const bookedRoom = expressAsyncHandler(async(req,res)=>{
         checkInDate: parsedCheckIn,
         checkOutDate: parsedCheckOut
     });
-    
-    const savedLog = await log.save();
+await UserModel.findByIdAndUpdate(
+  userId,
+  { $addToSet: { bookings: roomId } }, // massivga qayta qo‘shilmasin desa $addToSet
+  { new: true }
+);    const savedLog = await log.save();
 
     // Agar action booked bo'lsa va checkOutDate bo'lsa, Room modelini yangilash
     if (action === 'booked' && parsedCheckOut) {
@@ -237,6 +240,22 @@ const updateBookingLog = expressAsyncHandler(async (req, res) => {
     res.status(200).json({ message: 'Log muvaffaqiyatli yangilandi', log: updatedLog });
 });
 
+
+const getBooked = expressAsyncHandler(async(req,res)=>{
+  const { id } = req.params;
+
+  try {
+    const bookings = await BookingModel.find({ userId: id })
+   
+    res.status(200).json({
+      // message: "Bookings fetched successfully",
+      bookings
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching bookings", error });
+  }
+})
+
 module.exports = {
     getRooms,
     getRooms2,
@@ -245,5 +264,6 @@ module.exports = {
     updateRoom,
     bookedRoom,
     getARooms,
-    updateBookingLog
+    updateBookingLog,
+    getBooked
 }

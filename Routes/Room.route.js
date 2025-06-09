@@ -9,6 +9,8 @@ Route.put("/updateRoom/:id",roomController.updateRoom);
 Route.put("/deAvailable/:id",roomController.deAvailable);
 Route.post("/bookedRoom",roomController.bookedRoom);
 Route.put("/updateBookingLog",roomController.updateBookingLog);
+Route.get("/bookedRoomGet/:id",roomController.getBooked);
+
 
 
 
