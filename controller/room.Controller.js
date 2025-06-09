@@ -130,9 +130,8 @@ const bookedRoom = expressAsyncHandler(async(req,res)=>{
     const parsedCheckOut = checkOutDate ? new Date(checkOutDate) : undefined;
 
     // BookingModel hujjati yaratish
-    const log="";
     if (action==='booked'){
-    log = new BookingModel({
+    const log = new BookingModel({
         roomId,
         description,
         status:'pending',
@@ -141,8 +140,20 @@ const bookedRoom = expressAsyncHandler(async(req,res)=>{
         checkInDate: parsedCheckIn,
         checkOutDate: parsedCheckOut
     });
+    
+    const savedLog = await log.save();
+
+    // Agar action booked bo'lsa va checkOutDate bo'lsa, Room modelini yangilash
+    if (action === 'booked' && parsedCheckOut) {
+        await roomModel.findByIdAndUpdate(roomId, {
+            lastBookedUntil: parsedCheckOut,
+            userId:userId
+        });
+    }
+
+    res.status(201).json({ message: 'Log muvaffaqiyatli yaratildi', log: savedLog });
   }else{
-    log = new BookingModel({
+    const log = new BookingModel({
         roomId,
         description,
         action,
@@ -151,6 +162,18 @@ const bookedRoom = expressAsyncHandler(async(req,res)=>{
         checkInDate: parsedCheckIn,
         checkOutDate: parsedCheckOut
     });
+    
+    const savedLog = await log.save();
+
+    // Agar action booked bo'lsa va checkOutDate bo'lsa, Room modelini yangilash
+    if (action === 'booked' && parsedCheckOut) {
+        await roomModel.findByIdAndUpdate(roomId, {
+            lastBookedUntil: parsedCheckOut,
+            userId:userId
+        });
+    }
+
+    res.status(201).json({ message: 'Log muvaffaqiyatli yaratildi', log: savedLog });
   }
 
     const savedLog = await log.save();
