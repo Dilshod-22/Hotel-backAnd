@@ -130,7 +130,7 @@ const bookedRoom = expressAsyncHandler(async(req,res)=>{
     const parsedCheckOut = checkOutDate ? new Date(checkOutDate) : undefined;
 
     // BookingModel hujjati yaratish
-    const log
+    const log="";
     if (action==='booked'){
     log = new BookingModel({
         roomId,
