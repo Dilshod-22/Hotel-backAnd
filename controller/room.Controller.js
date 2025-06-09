@@ -245,7 +245,7 @@ const getBooked = expressAsyncHandler(async(req,res)=>{
   const { id } = req.params;
 
   try {
-    const bookings = await BookingModel.find({ userId: id }).populate("roomId").categ
+    const bookings = await BookingModel.find({ userId: id }).populate("roomId")
    
     res.status(200).json({
       // message: "Bookings fetched successfully",
