@@ -130,8 +130,9 @@ const bookedRoom = expressAsyncHandler(async(req,res)=>{
     const parsedCheckOut = checkOutDate ? new Date(checkOutDate) : undefined;
 
     // BookingModel hujjati yaratish
+    const log
     if (action==='booked'){
-    const log = new BookingModel({
+    log = new BookingModel({
         roomId,
         description,
         status:'pending',
@@ -141,7 +142,7 @@ const bookedRoom = expressAsyncHandler(async(req,res)=>{
         checkOutDate: parsedCheckOut
     });
   }else{
-    const log = new BookingModel({
+    log = new BookingModel({
         roomId,
         description,
         action,
