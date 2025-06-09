@@ -24,16 +24,17 @@ res.status(200).json({
 
 
 const getRooms2 = expressAsyncHandler(async(req,res)=>{
-  try {
-    const rooms = await roomModel.find().lean(); // `populate` olib tashlandi, `lean()` tezroq ishlaydi
-
-    res.status(200).json({
-      message: "Rooms fetched successfully",
-      rooms,
+  const rooms = await roomModel.find()
+    .populate("categoryId") // kategoriyani to'liq obyekt sifatida qo'shadi
+    .populate({
+      path: "userId",
+      select: "fullName email" // faqat fullname va email ni tanlab olish
     });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
+
+  res.status(200).json({
+    message: "Rooms fetched successfully",
+    rooms
+  });
 
 })
 
@@ -80,14 +81,14 @@ const deAvailable = expressAsyncHandler(async(req,res)=>{
 
 const updateRoom = expressAsyncHandler(async(req,res)=>{
     const { roomNumber, categoryId, floor, guests, size } = req.body;
-    const { roomId } = req.params;
+    const { id } = req.params;
 
-    if (!roomId) {
+    if (!id) {
     return res.status(400).json({ error: "Room ID is required" });
     }
 
     // Avval xonani bazadan topamiz
-    const room = await roomModel.findById(roomId);
+    const room = await roomModel.findById(id);
     if (!room) {
     return res.status(404).json({ error: "Room not found" });
     }
@@ -101,7 +102,7 @@ const updateRoom = expressAsyncHandler(async(req,res)=>{
     if (size) updateData.size = size;
 
     // Xonani yangilaymiz
-    const updatedRoom = await roomModel.findByIdAndUpdate(roomId, updateData, { new: true });
+    const updatedRoom = await roomModel.findByIdAndUpdate(id, updateData, { new: true });
 
     res.status(200).json({
     message: "Room updated successfully",
@@ -128,6 +129,17 @@ const bookedRoom = expressAsyncHandler(async(req,res)=>{
     const parsedCheckOut = checkOutDate ? new Date(checkOutDate) : undefined;
 
     // BookingModel hujjati yaratish
+    if (action==="booked"){
+    const log = new BookingModel({
+        roomId,
+        description,
+        status:'pending',
+        totalPrice,
+        userId,
+        checkInDate: parsedCheckIn,
+        checkOutDate: parsedCheckOut
+    });
+  }else{
     const log = new BookingModel({
         roomId,
         description,
@@ -137,13 +149,15 @@ const bookedRoom = expressAsyncHandler(async(req,res)=>{
         checkInDate: parsedCheckIn,
         checkOutDate: parsedCheckOut
     });
+  }
 
     const savedLog = await log.save();
 
     // Agar action booked bo'lsa va checkOutDate bo'lsa, Room modelini yangilash
     if (action === 'booked' && parsedCheckOut) {
         await roomModel.findByIdAndUpdate(roomId, {
-            lastBookedUntil: parsedCheckOut
+            lastBookedUntil: parsedCheckOut,
+            userId:userId
         });
     }
 
