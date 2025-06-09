@@ -5,19 +5,20 @@ const BookingModel = require("../models/BookingModel");
 
 
 const getRooms = expressAsyncHandler(async(req,res)=>{
-    // const rooms = await roomModel.find();
-    // if(rooms){
-    //     res.status(200).json(rooms);
-    // }else{
-    //     res.status(201).json({message:"room is not available!"});
-    // }
-    const rooms = await roomModel.find().populate("categoryId");
+  const now = new Date(); // Hozirgi vaqt
 
-res.status(200).json({
-  message: "Rooms fetched successfully",
-  rooms
-});
+  const rooms = await roomModel.find({
+    $or: [
+      { lastBookedUntil: { $lte: now } }, // Tugagan yoki hozirgi vaqtga teng
+      { lastBookedUntil: { $exists: false } }, // Maydon mavjud emas
+      { lastBookedUntil: null } // Yoki qiymati null
+    ]
+  }).populate("categoryId"); // Faqat categoryId ni chaqirish
 
+  res.status(200).json({
+    message: "Rooms fetched successfully",
+    rooms
+  });
 
 })
 
@@ -129,7 +130,7 @@ const bookedRoom = expressAsyncHandler(async(req,res)=>{
     const parsedCheckOut = checkOutDate ? new Date(checkOutDate) : undefined;
 
     // BookingModel hujjati yaratish
-    if (action==="booked"){
+    if (action==='booked'){
     const log = new BookingModel({
         roomId,
         description,
