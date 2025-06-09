@@ -2,6 +2,7 @@ const roomModel = require("../models/RoomModel");
 const expressAsyncHandler = require("express-async-handler");
 const UserModel = require("../models/UserModel");
 const BookingModel = require("../models/BookingModel");
+const RoomModel = require("../models/RoomModel");
 
 
 const getRooms = expressAsyncHandler(async(req,res)=>{
@@ -19,7 +20,6 @@ const getRooms = expressAsyncHandler(async(req,res)=>{
     message: "Rooms fetched successfully",
     rooms
   });
-
 })
 
 
@@ -256,6 +256,49 @@ const getBooked = expressAsyncHandler(async(req,res)=>{
   }
 })
 
+const getStats = expressAsyncHandler(async (req, res) => {
+  console.log("keldi");
+  
+  try {
+    // Umumiy foydalanuvchilar va xonalar soni
+    const userCount = await UserModel.countDocuments();
+    const roomCount = await RoomModel.countDocuments();
+
+    // BookingModel statistikasi
+    const pendingCount = await BookingModel.countDocuments({ status: 'pending' });
+    const activeCount = await BookingModel.countDocuments({ status: 'active' });
+
+    // totalPrice yig'indisini hisoblash
+    const totalPriceAgg = await BookingModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalPrice" }
+        }
+      }
+    ]);
+
+    const totalPrice = totalPriceAgg[0]?.total || 0;
+
+    // Javob qaytarish
+    res.status(200).json({
+      stats: {
+        totalUsers: userCount,
+        totalRooms: roomCount,
+        bookings: {
+          pending: pendingCount,
+          active: activeCount,
+          totalPrice: totalPrice
+        }
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching statistics", error });
+  }
+});
+
+
 module.exports = {
     getRooms,
     getRooms2,
@@ -265,5 +308,6 @@ module.exports = {
     bookedRoom,
     getARooms,
     updateBookingLog,
-    getBooked
+    getBooked,
+    getStats
 }
